@@ -18,7 +18,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Configuração Real do seu Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBwJbFLCaHsyDXXzBYqbo2xp744-dGKq_I",
       authDomain: "calendario-de9d0.firebaseapp.com",
@@ -88,275 +87,292 @@
     }
   </style>
 </head>
-<body class="min-h-screen p-3 md:p-6 pb-12 flex flex-col items-center">
+<body class="min-h-screen p-3 md:p-6 pb-12 flex flex-col items-center justify-center">
 
-  <div class="w-full max-w-6xl space-y-5">
+  <div class="w-full max-w-4xl space-y-5">
     
-    <!-- Top Sync & Room Control Bar -->
-    <div class="glass-panel rounded-2xl p-3 md:p-4 flex flex-col md:flex-row items-center justify-between gap-3 text-xs shadow-xl border-purple-500/20">
+    <!-- Top Sync & Room Control Bar (Sempre visível discretamente) -->
+    <div class="glass-panel rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-xl border-purple-500/20">
       <div class="flex items-center space-x-2.5">
         <span id="syncIndicatorIcon" class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]"></span>
-        <span id="syncStatusText" class="font-medium text-slate-300">Conectando ao Firebase...</span>
+        <span id="syncStatusText" class="font-medium text-slate-300">Conectando...</span>
       </div>
 
-      <div class="flex items-center gap-2 w-full md:w-auto">
+      <div class="flex items-center gap-2">
         <label for="roomKeyInput" class="text-slate-400 font-medium whitespace-nowrap flex items-center gap-1.5">
-          <i class="fa-solid fa-key text-purple-400"></i> Chave de Sincronização:
+          <i class="fa-solid fa-key text-purple-400"></i> Chave:
         </label>
-        <div class="flex gap-2 w-full md:w-auto">
-          <input 
-            type="text" 
-            id="roomKeyInput" 
-            placeholder="Ex: minhapastapessoal" 
-            class="bg-dark-900/90 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500 w-full md:w-48 font-mono shadow-inner"
-          />
-          <button 
-            id="btnChangeRoom" 
-            class="bg-purple-600 hover:bg-purple-500 active:scale-95 text-white px-3.5 py-1.5 rounded-xl font-semibold transition shadow-lg shadow-purple-600/30 whitespace-nowrap">
-            Conectar
+        <input 
+          type="text" 
+          id="roomKeyInput" 
+          placeholder="Ex: minhapasta" 
+          class="bg-dark-900/90 border border-slate-700/85 rounded-xl px-2.5 py-1 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500 w-32 font-mono shadow-inner"
+        />
+        <button 
+          id="btnChangeRoom" 
+          class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1 rounded-xl font-semibold transition shadow-md">
+          Salvar
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= TELA 1: PÁGINA DE BOAS-VINDAS ================= -->
+    <div id="welcomeScreen" class="glass-panel rounded-3xl p-6 md:p-10 shadow-2xl border border-purple-500/30 text-center space-y-6 relative overflow-hidden bg-gradient-to-b from-dark-800/90 via-dark-800/80 to-purple-950/20">
+      
+      <div class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-purple-500/30">
+        <i class="fa-solid fa-wallet"></i>
+      </div>
+
+      <div class="space-y-2 max-w-lg mx-auto">
+        <h1 id="welcomeGreeting" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+          Olá! A carregar...
+        </h1>
+        <p id="welcomeDailySummary" class="text-sm md:text-base text-slate-300 leading-relaxed font-medium">
+          A verificar as contas e folgas de hoje...
+        </p>
+      </div>
+
+      <!-- Cards Informativos na Boas-Vindas -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto pt-2">
+        <div class="bg-dark-900/80 border border-slate-800 p-4 rounded-2xl flex items-center gap-3.5 shadow-inner text-left">
+          <div id="welcomeStatusIcon" class="w-11 h-11 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20 shrink-0">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Escala de Hoje</p>
+            <h4 id="welcomeStatusText" class="text-xs font-extrabold text-white mt-0.5">A verificar...</h4>
+          </div>
+        </div>
+
+        <div class="bg-dark-900/80 border border-slate-800 p-4 rounded-2xl flex items-center gap-3.5 shadow-inner text-left">
+          <div class="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg border border-amber-500/20 shrink-0">
+            <i class="fa-solid fa-receipt"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Contas Hoje</p>
+            <h4 id="welcomeBillsText" class="text-xs font-extrabold text-amber-300 mt-0.5">R$ 0,00</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <button 
+          id="enterCalendarBtn"
+          class="w-full max-w-md bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-sm md:text-base rounded-2xl py-3.5 transition shadow-xl shadow-purple-600/30 flex items-center justify-center gap-2 mx-auto">
+          <span>Abrir Calendário & Finanças</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ================= TELA 2: CALENDÁRIO COMPLETO (Inicialmente Oculto) ================= -->
+    <div id="calendarAppScreen" class="space-y-5 hidden">
+      
+      <!-- Botão Voltar para Boas-Vindas -->
+      <div class="flex items-center justify-between">
+        <button 
+          id="backToWelcomeBtn"
+          class="bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center gap-2">
+          <i class="fa-solid fa-arrow-left"></i> Voltar ao Início
+        </button>
+      </div>
+
+      <!-- Header / Navigation Bar -->
+      <header class="glass-panel rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl">
+        <div class="flex items-center space-x-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-purple-500/30">
+            <i class="fa-solid fa-calendar-days"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+              Calendário & Financeiro
+            </h2>
+            <p class="text-xs text-slate-400">Gerenciador de Folgas e Contas Ajustável</p>
+          </div>
+        </div>
+
+        <!-- Navegação de Mês -->
+        <div class="flex items-center space-x-2 bg-dark-900/90 p-1.5 rounded-2xl border border-slate-800/80 shadow-inner">
+          <button id="prevMonthBtn" class="p-2 hover:bg-slate-800 active:scale-90 rounded-xl text-slate-300 hover:text-white transition" title="Mês Anterior">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button id="todayBtn" class="px-3 py-1.5 hover:bg-slate-800 active:scale-95 rounded-xl text-xs font-bold text-purple-400 hover:text-purple-300 transition" title="Ir para hoje">
+            Hoje
+          </button>
+          <span id="currentMonthYear" class="px-3 font-bold text-sm md:text-base text-purple-200 min-w-[140px] text-center capitalize">
+            Carregando...
+          </span>
+          <button id="nextMonthBtn" class="p-2 hover:bg-slate-800 active:scale-90 rounded-xl text-slate-300 hover:text-white transition" title="Próximo Mês">
+            <i class="fa-solid fa-chevron-right"></i>
           </button>
         </div>
-      </div>
-    </div>
+      </header>
 
-    <!-- SEÇÇÃO DE BOAS-VINDAS / DASHBOARD -->
-    <section class="glass-panel rounded-3xl p-5 md:p-7 shadow-2xl relative overflow-hidden border border-purple-500/20 bg-gradient-to-br from-dark-800/90 via-dark-800/70 to-purple-950/20">
-      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+      <!-- Legendas Rápidas -->
+      <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-slate-400 px-2 font-medium">
+        <div class="flex items-center gap-2 bg-dark-800 px-3 py-1.5 rounded-full border border-slate-800">
+          <span class="w-3 h-3 rounded-full bg-pink-500 shadow-[0_0_6px_rgba(236,72,153,0.8)]"></span>
+          <span>Dia de Folga</span>
+        </div>
+        <div class="flex items-center gap-2 bg-dark-800 px-3 py-1.5 rounded-full border border-slate-800">
+          <span class="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"></span>
+          <span>Dia Pago / Sem Pendência</span>
+        </div>
+        <div class="flex items-center gap-2 bg-dark-800 px-3 py-1.5 rounded-full border border-slate-800">
+          <span class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)]"></span>
+          <span>Conta Pendente</span>
+        </div>
+        <div class="flex items-center gap-2 bg-dark-800 px-3 py-1.5 rounded-full border border-slate-800">
+          <i class="fa-solid fa-clock-rotate-left text-amber-400"></i>
+          <span>Antecipado por Folga</span>
+        </div>
+      </div>
+
+      <!-- Main Grid: Calendar + Day Details Panel -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Texto de Boas-Vindas -->
-        <div class="space-y-1.5 max-w-xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-semibold">
-            <i class="fa-solid fa-sparkles"></i> Painel Pessoal
-          </div>
-          <h1 id="welcomeGreeting" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-            Olá, bem-vindo! 👋
-          </h1>
-          <p id="welcomeSubtext" class="text-xs md:text-sm text-slate-400">
-            A carregar resumo do seu dia...
-          </p>
-        </div>
-
-        <!-- Cards Rápidos do Dia de Hoje -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full lg:w-auto">
-          <!-- Card Status Hoje -->
-          <div class="bg-dark-900/80 border border-slate-800 p-3.5 rounded-2xl flex items-center gap-3 shadow-inner">
-            <div id="todayStatusIcon" class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20">
-              <i class="fa-solid fa-briefcase"></i>
-            </div>
-            <div>
-              <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Hoje é dia de:</p>
-              <h4 id="todayStatusText" class="text-xs font-extrabold text-white">Carregando...</h4>
-            </div>
+        <!-- Calendar View -->
+        <div class="lg:col-span-2 glass-panel rounded-2xl p-4 md:p-6 shadow-2xl">
+          <div class="grid grid-cols-7 mb-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <div class="text-rose-400">Dom</div>
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div class="text-purple-400">Sáb</div>
           </div>
 
-          <!-- Card Contas Hoje -->
-          <div class="bg-dark-900/80 border border-slate-800 p-3.5 rounded-2xl flex items-center gap-3 shadow-inner">
-            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg border border-amber-500/20">
-              <i class="fa-solid fa-clock"></i>
-            </div>
-            <div>
-              <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">A Pagar Hoje:</p>
-              <h4 id="todayBillsText" class="text-xs font-extrabold text-amber-300">R$ 0,00</h4>
-            </div>
-          </div>
+          <div id="calendarGrid" class="grid grid-cols-7 gap-1.5 md:gap-2.5"></div>
         </div>
 
-      </div>
-    </section>
-
-    <!-- Header / Navigation Bar -->
-    <header class="glass-panel rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl">
-      <div class="flex items-center space-x-3.5">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-purple-500/30">
-          <i class="fa-solid fa-calendar-days"></i>
-        </div>
-        <div>
-          <h2 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
-            Calendário & Financeiro
-          </h2>
-          <p class="text-xs text-slate-400">Gerenciador de Folgas e Contas Ajustável</p>
-        </div>
-      </div>
-
-      <!-- Navegação de Mês -->
-      <div class="flex items-center space-x-2 bg-dark-900/90 p-1.5 rounded-2xl border border-slate-800/80 shadow-inner">
-        <button id="prevMonthBtn" class="p-2 hover:bg-slate-800 active:scale-90 rounded-xl text-slate-300 hover:text-white transition" title="Mês Anterior">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-        <button id="todayBtn" class="px-3 py-1.5 hover:bg-slate-800 active:scale-95 rounded-xl text-xs font-bold text-purple-400 hover:text-purple-300 transition" title="Ir para hoje">
-          Hoje
-        </button>
-        <span id="currentMonthYear" class="px-3 font-bold text-sm md:text-base text-purple-200 min-w-[140px] text-center capitalize">
-          Carregando...
-        </span>
-        <button id="nextMonthBtn" class="p-2 hover:bg-slate-800 active:scale-90 rounded-xl text-slate-300 hover:text-white transition" title="Próximo Mês">
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-      </div>
-    </header>
-
-    <!-- Legendas Rápidas -->
-    <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-slate-400 px-2 font-medium">
-      <div class="flex items-center gap-2 bg-dark-800 px-3 py-1.5 rounded-full border border-slate-800">
-        <span class="w-3 h-3 rounded-full bg-pink-500 shadow-[0_0_6px_rgba(236,72,153,0.8)]"></span>
-        <span>Dia de Folga</span>
-      </div>
-      <div class="flex items-center gap-2 bg-dark-800 px-3 py-1.5 rounded-full border border-slate-800">
-        <span class="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"></span>
-        <span>Dia Pago / Sem Pendência</span>
-      </div>
-      <div class="flex items-center gap-2 bg-dark-800 px-3 py-1.5 rounded-full border border-slate-800">
-        <span class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.8)]"></span>
-        <span>Conta Pendente</span>
-      </div>
-      <div class="flex items-center gap-2 bg-dark-800 px-3 py-1.5 rounded-full border border-slate-800">
-        <i class="fa-solid fa-clock-rotate-left text-amber-400"></i>
-        <span>Antecipado por Folga</span>
-      </div>
-    </div>
-
-    <!-- Main Grid: Calendar + Day Details Panel -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- Calendar View -->
-      <div class="lg:col-span-2 glass-panel rounded-2xl p-4 md:p-6 shadow-2xl">
-        <div class="grid grid-cols-7 mb-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
-          <div class="text-rose-400">Dom</div>
-          <div>Seg</div>
-          <div>Ter</div>
-          <div>Qua</div>
-          <div>Qui</div>
-          <div>Sex</div>
-          <div class="text-purple-400">Sáb</div>
-        </div>
-
-        <div id="calendarGrid" class="grid grid-cols-7 gap-1.5 md:gap-2.5"></div>
-      </div>
-
-      <!-- Selected Day Detail Panel -->
-      <div class="glass-panel rounded-2xl p-5 shadow-2xl flex flex-col justify-between space-y-4">
-        <div>
-          <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
-            <div>
-              <h3 id="selectedDayTitle" class="text-lg font-bold text-white">Selecione um dia</h3>
-              <p id="selectedDaySubtitle" class="text-xs text-slate-400">Detalhes das contas e escala</p>
-            </div>
-            <div id="selectedDayBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">-</div>
-          </div>
-
-          <div class="mb-5 bg-dark-900/80 p-3.5 rounded-2xl border border-slate-800/80 flex items-center justify-between shadow-inner">
-            <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-              <i class="fa-solid fa-user-clock text-purple-400"></i> Status de Trabalho:
-            </span>
-            <button id="toggleOffDayBtn" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow-md"></button>
-          </div>
-
-          <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <i class="fa-solid fa-receipt text-indigo-400"></i> Contas Agendadas Hoje
-              </h4>
-              <span id="dayTotalBadge" class="text-xs font-extrabold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">R$ 0,00</span>
+        <!-- Selected Day Detail Panel -->
+        <div class="glass-panel rounded-2xl p-5 shadow-2xl flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
+              <div>
+                <h3 id="selectedDayTitle" class="text-lg font-bold text-white">Selecione um dia</h3>
+                <p id="selectedDaySubtitle" class="text-xs text-slate-400">Detalhes das contas e escala</p>
+              </div>
+              <div id="selectedDayBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">-</div>
             </div>
 
-            <div id="dayBillsList" class="space-y-2 max-h-52 overflow-y-auto custom-scrollbar pr-1"></div>
-          </div>
-        </div>
+            <div class="mb-5 bg-dark-900/80 p-3.5 rounded-2xl border border-slate-800/80 flex items-center justify-between shadow-inner">
+              <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-user-clock text-purple-400"></i> Status de Trabalho:
+              </span>
+              <button id="toggleOffDayBtn" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow-md"></button>
+            </div>
 
-        <!-- Form Adicionar Conta -->
-        <div class="border-t border-slate-800/80 pt-4 mt-2">
-          <h4 class="text-xs font-bold text-slate-200 mb-2.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-circle-plus text-purple-400"></i> Adicionar Nova Conta
-          </h4>
-          <form id="addBillForm" class="space-y-2.5">
-            <input 
-              type="text" 
-              id="billTitleInput" 
-              placeholder="Nome da conta (ex: Luz, Internet, Cartão)" 
-              required 
-              class="w-full bg-dark-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition shadow-inner"
-            />
-            <div class="grid grid-cols-2 gap-2">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fa-solid fa-receipt text-indigo-400"></i> Contas Agendadas Hoje
+                </h4>
+                <span id="dayTotalBadge" class="text-xs font-extrabold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">R$ 0,00</span>
+              </div>
+
+              <div id="dayBillsList" class="space-y-2 max-h-52 overflow-y-auto custom-scrollbar pr-1"></div>
+            </div>
+          </div>
+
+          <!-- Form Adicionar Conta -->
+          <div class="border-t border-slate-800/80 pt-4 mt-2">
+            <h4 class="text-xs font-bold text-slate-200 mb-2.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-plus text-purple-400"></i> Adicionar Nova Conta
+            </h4>
+            <form id="addBillForm" class="space-y-2.5">
               <input 
-                type="number" 
-                step="0.01" 
-                id="billAmountInput" 
-                placeholder="Valor (R$)" 
+                type="text" 
+                id="billTitleInput" 
+                placeholder="Nome da conta (ex: Luz, Internet, Cartão)" 
                 required 
-                class="bg-dark-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition shadow-inner"
+                class="w-full bg-dark-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition shadow-inner"
               />
-              <select 
-                id="billStatusInput"
-                class="bg-dark-900 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-white focus:outline-none focus:border-purple-500 transition shadow-inner font-medium">
-                <option value="pending">⏳ Pendente</option>
-                <option value="paid">✅ Paga</option>
-              </select>
-            </div>
-            
-            <button 
-              type="submit" 
-              class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs rounded-xl py-2.5 transition flex items-center justify-center gap-1.5 shadow-lg shadow-purple-600/25">
-              <i class="fa-solid fa-plus"></i> Salvar Conta
-            </button>
-            <p class="text-[10px] text-slate-500 text-center leading-tight">
-              *Se o vencimento cair numa folga, o pagamento será automaticamente ajustado para o dia útil anterior.
-            </p>
-          </form>
+              <div class="grid grid-cols-2 gap-2">
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  id="billAmountInput" 
+                  placeholder="Valor (R$)" 
+                  required 
+                  class="bg-dark-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition shadow-inner"
+                />
+                <select 
+                  id="billStatusInput"
+                  class="bg-dark-900 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-white focus:outline-none focus:border-purple-500 transition shadow-inner font-medium">
+                  <option value="pending">⏳ Pendente</option>
+                  <option value="paid">✅ Paga</option>
+                </select>
+              </div>
+              
+              <button 
+                type="submit" 
+                class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-xs rounded-xl py-2.5 transition flex items-center justify-center gap-1.5 shadow-lg shadow-purple-600/25">
+                <i class="fa-solid fa-plus"></i> Salvar Conta
+              </button>
+              <p class="text-[10px] text-slate-500 text-center leading-tight">
+                *Se o vencimento cair numa folga, o pagamento será automaticamente ajustado para o dia útil anterior.
+              </p>
+            </form>
+          </div>
         </div>
+
       </div>
+
+      <!-- Monthly Summary Section / Footer Stats -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-indigo-500 flex items-center justify-between shadow-xl">
+          <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total do Mês</p>
+            <h3 id="monthTotalBills" class="text-2xl font-extrabold text-white mt-1">R$ 0,00</h3>
+            <p id="monthBillsCount" class="text-[11px] text-slate-400 mt-0.5">0 conta(s)</p>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl border border-indigo-500/20 shadow-inner">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-amber-500 flex items-center justify-between shadow-xl">
+          <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pendente a Pagar</p>
+            <h3 id="monthPendingBills" class="text-2xl font-extrabold text-amber-400 mt-1">R$ 0,00</h3>
+            <p id="monthPendingCount" class="text-[11px] text-slate-400 mt-0.5">0 pendente(s)</p>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl border border-amber-500/20 shadow-inner">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-emerald-500 flex items-center justify-between shadow-xl">
+          <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Pago</p>
+            <h3 id="monthPaidBills" class="text-2xl font-extrabold text-emerald-400 mt-1">R$ 0,00</h3>
+            <p id="monthPaidCount" class="text-[11px] text-slate-400 mt-0.5">0 paga(s)</p>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl border border-emerald-500/20 shadow-inner">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-pink-500 flex items-center justify-between shadow-xl">
+          <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total de Folgas</p>
+            <h3 id="monthTotalOffDays" class="text-2xl font-extrabold text-pink-400 mt-1">0 Dias</h3>
+            <p id="monthOffDaysBreakdown" class="text-[11px] text-slate-400 mt-0.5">Neste mês</p>
+          </div>
+          <div class="w-11 h-11 rounded-2xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-xl border border-pink-500/20 shadow-inner">
+            <i class="fa-solid fa-umbrella-beach"></i>
+          </div>
+        </div>
+      </section>
 
     </div>
-
-    <!-- Monthly Summary Section / Footer Stats -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-indigo-500 flex items-center justify-between shadow-xl">
-        <div>
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total do Mês</p>
-          <h3 id="monthTotalBills" class="text-2xl font-extrabold text-white mt-1">R$ 0,00</h3>
-          <p id="monthBillsCount" class="text-[11px] text-slate-400 mt-0.5">0 conta(s)</p>
-        </div>
-        <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl border border-indigo-500/20 shadow-inner">
-          <i class="fa-solid fa-wallet"></i>
-        </div>
-      </div>
-
-      <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-amber-500 flex items-center justify-between shadow-xl">
-        <div>
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pendente a Pagar</p>
-          <h3 id="monthPendingBills" class="text-2xl font-extrabold text-amber-400 mt-1">R$ 0,00</h3>
-          <p id="monthPendingCount" class="text-[11px] text-slate-400 mt-0.5">0 pendente(s)</p>
-        </div>
-        <div class="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl border border-amber-500/20 shadow-inner">
-          <i class="fa-solid fa-hourglass-half"></i>
-        </div>
-      </div>
-
-      <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-emerald-500 flex items-center justify-between shadow-xl">
-        <div>
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Pago</p>
-          <h3 id="monthPaidBills" class="text-2xl font-extrabold text-emerald-400 mt-1">R$ 0,00</h3>
-          <p id="monthPaidCount" class="text-[11px] text-slate-400 mt-0.5">0 paga(s)</p>
-        </div>
-        <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl border border-emerald-500/20 shadow-inner">
-          <i class="fa-solid fa-circle-check"></i>
-        </div>
-      </div>
-
-      <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-pink-500 flex items-center justify-between shadow-xl">
-        <div>
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total de Folgas</p>
-          <h3 id="monthTotalOffDays" class="text-2xl font-extrabold text-pink-400 mt-1">0 Dias</h3>
-          <p id="monthOffDaysBreakdown" class="text-[11px] text-slate-400 mt-0.5">Neste mês</p>
-        </div>
-        <div class="w-11 h-11 rounded-2xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-xl border border-pink-500/20 shadow-inner">
-          <i class="fa-solid fa-umbrella-beach"></i>
-        </div>
-      </div>
-    </section>
 
   </div>
 
-  <!-- JavaScript application logic -->
+  <!-- JavaScript Application Logic -->
   <script>
     const state = {
       currentDate: new Date(),
@@ -372,6 +388,11 @@
     const btnChangeRoom = document.getElementById('btnChangeRoom');
     const syncStatusText = document.getElementById('syncStatusText');
     const syncIndicatorIcon = document.getElementById('syncIndicatorIcon');
+
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const calendarAppScreen = document.getElementById('calendarAppScreen');
+    const enterCalendarBtn = document.getElementById('enterCalendarBtn');
+    const backToWelcomeBtn = document.getElementById('backToWelcomeBtn');
 
     const calendarGrid = document.getElementById('calendarGrid');
     const currentMonthYear = document.getElementById('currentMonthYear');
@@ -422,10 +443,10 @@
             state.bills = [];
           }
           renderAll();
-          updateSyncStatus(true, `Sincronizado via Firebase (${state.roomKey})`);
+          updateSyncStatus(true, `Firebase conectado (${state.roomKey})`);
         }, (err) => {
           console.error(err);
-          updateSyncStatus(false, 'Erro ao conectar no Firebase');
+          updateSyncStatus(false, 'Erro de Sincronização');
         });
       } else {
         setTimeout(setupFirebaseSync, 500);
@@ -485,64 +506,72 @@
       };
     }
 
-    function renderWelcomeBanner() {
+    function renderWelcomeScreenData() {
       const now = new Date();
       const hours = now.getHours();
-      let greeting = "Olá, bem-vindo! 👋";
+      let greeting = "Olá!";
 
       if (hours >= 5 && hours < 12) greeting = "Bom dia! ☀️";
       else if (hours >= 12 && hours < 18) greeting = "Boa tarde! 🌤️";
       else greeting = "Boa noite! 🌙";
 
-      const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-      const todayFormatted = new Intl.DateTimeFormat('pt-BR', dateOptions).format(now);
+      const dayOfWeekName = now.toLocaleDateString('pt-BR', { weekday: 'long' });
+      const capitalizedDay = dayOfWeekName.charAt(0).toUpperCase() + dayOfWeekName.slice(1);
 
-      document.getElementById('welcomeGreeting').textContent = greeting;
-      document.getElementById('welcomeSubtext').textContent = `Hoje é ${todayFormatted}.`;
+      document.getElementById('welcomeGreeting').textContent = `${greeting} Hoje é ${capitalizedDay}.`;
 
-      // Status do Dia de Hoje
-      const todayKey = formatDateKey(now);
+      // Status do dia de hoje
       const todayOff = isOffDay(now);
-
-      const statusIcon = document.getElementById('todayStatusIcon');
-      const statusText = document.getElementById('todayStatusText');
+      const statusText = document.getElementById('welcomeStatusText');
+      const statusIcon = document.getElementById('welcomeStatusIcon');
 
       if (todayOff) {
         statusText.textContent = "Dia de Folga! 🏖️";
-        statusText.className = "text-xs font-extrabold text-pink-400";
-        statusIcon.className = "w-10 h-10 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-lg border border-pink-500/20";
+        statusIcon.className = "w-11 h-11 rounded-2xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-lg border border-pink-500/20 shrink-0";
         statusIcon.innerHTML = `<i class="fa-solid fa-umbrella-beach"></i>`;
       } else {
         statusText.textContent = "Dia de Trabalho 💼";
-        statusText.className = "text-xs font-extrabold text-purple-300";
-        statusIcon.className = "w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20";
+        statusIcon.className = "w-11 h-11 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20 shrink-0";
         statusIcon.innerHTML = `<i class="fa-solid fa-briefcase"></i>`;
       }
 
-      // Contas para Hoje
+      // Contas pendentes para hoje
+      const todayKey = formatDateKey(now);
       const todayBills = state.bills.filter(bill => {
         const { adjustedDateKey } = getAdjustedPaymentDate(bill.originalDueDate);
         return adjustedDateKey === todayKey && bill.status === 'pending';
       });
 
       const totalTodayPending = todayBills.reduce((acc, b) => acc + Number(b.amount), 0);
-      const billsTextEl = document.getElementById('todayBillsText');
+      const billsTextEl = document.getElementById('welcomeBillsText');
+      const summaryTextEl = document.getElementById('welcomeDailySummary');
 
       if (todayBills.length === 0) {
         billsTextEl.textContent = "Nenhuma pendência 🎉";
-        billsTextEl.className = "text-xs font-extrabold text-emerald-400";
+        summaryTextEl.textContent = `Você não tem contas pendentes para pagar hoje (${capitalizedDay}). Aproveite o seu dia!`;
       } else {
-        billsTextEl.textContent = `R$ ${totalTodayPending.toFixed(2)} (${todayBills.length})`;
-        billsTextEl.className = "text-xs font-extrabold text-amber-300";
+        billsTextEl.textContent = `R$ ${totalTodayPending.toFixed(2)}`;
+        summaryTextEl.textContent = `Você tem ${todayBills.length} conta(s) pendente(s) para pagar hoje no valor total de R$ ${totalTodayPending.toFixed(2)}.`;
       }
     }
 
     function renderAll() {
-      renderWelcomeBanner();
+      renderWelcomeScreenData();
       renderCalendar();
       renderSelectedDayDetails();
       renderMonthlySummary();
     }
+
+    // Navegação entre telas
+    enterCalendarBtn.addEventListener('click', () => {
+      welcomeScreen.classList.add('hidden');
+      calendarAppScreen.classList.remove('hidden');
+    });
+
+    backToWelcomeBtn.addEventListener('click', () => {
+      calendarAppScreen.classList.add('hidden');
+      welcomeScreen.classList.remove('hidden');
+    });
 
     function renderCalendar() {
       const year = state.currentDate.getFullYear();
@@ -770,7 +799,6 @@
       monthOffDaysBreakdown.textContent = `Registradas no mês selecionado`;
     }
 
-    // Ações de Usuário
     window.toggleBillStatus = (id) => {
       const bill = state.bills.find(b => b.id === id);
       if (bill) {
