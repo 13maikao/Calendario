@@ -61,15 +61,53 @@
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Estilos do Modo Escuro */
+    html.dark body {
       background-color: #08090d;
       color: #f1f5f9;
     }
-    .glass-panel {
+    html.dark .glass-panel {
       background: rgba(18, 20, 29, 0.75);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
+
+    /* Estilos do Modo Claro */
+    html:not(.dark) body {
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    html:not(.dark) .glass-panel {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+    html:not(.dark) .text-white {
+      color: #0f172a !important;
+    }
+    html:not(.dark) .text-slate-300, html:not(.dark) .text-slate-400 {
+      color: #475569 !important;
+    }
+    html:not(.dark) .bg-dark-900, html:not(.dark) .bg-dark-900\/80, html:not(.dark) .bg-dark-900\/90, html:not(.dark) .bg-dark-900\/40 {
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+    }
+    html:not(.dark) .bg-dark-800 {
+      background-color: #e2e8f0 !important;
+      border-color: #cbd5e1 !important;
+    }
+    html:not(.dark) input, html:not(.dark) select {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+
     .custom-scrollbar::-webkit-scrollbar {
       width: 5px;
       height: 5px;
@@ -91,28 +129,49 @@
 
   <div class="w-full max-w-4xl space-y-5">
     
-    <!-- Top Sync & Room Control Bar (Sempre visível discretamente) -->
+    <!-- Top Bar: Sync + Seletor de Tema -->
     <div class="glass-panel rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-xl border-purple-500/20">
+      
+      <!-- Status de Sincronização -->
       <div class="flex items-center space-x-2.5">
         <span id="syncIndicatorIcon" class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]"></span>
         <span id="syncStatusText" class="font-medium text-slate-300">Conectando...</span>
       </div>
 
-      <div class="flex items-center gap-2">
-        <label for="roomKeyInput" class="text-slate-400 font-medium whitespace-nowrap flex items-center gap-1.5">
-          <i class="fa-solid fa-key text-purple-400"></i> Chave:
-        </label>
-        <input 
-          type="text" 
-          id="roomKeyInput" 
-          placeholder="Ex: minhapasta" 
-          class="bg-dark-900/90 border border-slate-700/85 rounded-xl px-2.5 py-1 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500 w-32 font-mono shadow-inner"
-        />
-        <button 
-          id="btnChangeRoom" 
-          class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1 rounded-xl font-semibold transition shadow-md">
-          Salvar
-        </button>
+      <!-- Controles: Tema + Chave -->
+      <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+        
+        <!-- Seletor de Tema -->
+        <div class="flex items-center gap-1.5 bg-dark-900/80 p-1 rounded-xl border border-slate-700/80">
+          <button id="themeLightBtn" class="p-1.5 px-2 rounded-lg text-slate-400 hover:text-amber-400 transition" title="Tema Claro">
+            <i class="fa-solid fa-sun"></i>
+          </button>
+          <button id="themeDarkBtn" class="p-1.5 px-2 rounded-lg text-slate-400 hover:text-purple-400 transition" title="Tema Escuro">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          <button id="themeSystemBtn" class="p-1.5 px-2 rounded-lg text-slate-400 hover:text-blue-400 transition" title="Tema do Sistema">
+            <i class="fa-solid fa-desktop"></i>
+          </button>
+        </div>
+
+        <!-- Chave de Sincronização -->
+        <div class="flex items-center gap-1.5">
+          <label for="roomKeyInput" class="text-slate-400 font-medium whitespace-nowrap flex items-center gap-1">
+            <i class="fa-solid fa-key text-purple-400"></i>
+          </label>
+          <input 
+            type="text" 
+            id="roomKeyInput" 
+            placeholder="Chave" 
+            class="bg-dark-900/90 border border-slate-700/85 rounded-xl px-2.5 py-1 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-purple-500 w-28 font-mono shadow-inner"
+          />
+          <button 
+            id="btnChangeRoom" 
+            class="bg-purple-600 hover:bg-purple-500 text-white px-2.5 py-1 rounded-xl font-semibold transition shadow-md">
+            Ok
+          </button>
+        </div>
+
       </div>
     </div>
 
@@ -132,7 +191,7 @@
         </p>
       </div>
 
-      <!-- Cards Informativos na Boas-Vindas -->
+      <!-- Cards Informativos -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto pt-2">
         <div class="bg-dark-900/80 border border-slate-800 p-4 rounded-2xl flex items-center gap-3.5 shadow-inner text-left">
           <div id="welcomeStatusIcon" class="w-11 h-11 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20 shrink-0">
@@ -166,10 +225,10 @@
 
     </div>
 
-    <!-- ================= TELA 2: CALENDÁRIO COMPLETO (Inicialmente Oculto) ================= -->
+    <!-- ================= TELA 2: CALENDÁRIO COMPLETO ================= -->
     <div id="calendarAppScreen" class="space-y-5 hidden">
       
-      <!-- Botão Voltar para Boas-Vindas -->
+      <!-- Botão Voltar -->
       <div class="flex items-center justify-between">
         <button 
           id="backToWelcomeBtn"
@@ -229,7 +288,7 @@
         </div>
       </div>
 
-      <!-- Main Grid: Calendar + Day Details Panel -->
+      <!-- Main Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- Calendar View -->
@@ -247,7 +306,7 @@
           <div id="calendarGrid" class="grid grid-cols-7 gap-1.5 md:gap-2.5"></div>
         </div>
 
-        <!-- Selected Day Detail Panel -->
+        <!-- Selected Day Panel -->
         <div class="glass-panel rounded-2xl p-5 shadow-2xl flex flex-col justify-between space-y-4">
           <div>
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
@@ -321,553 +380,9 @@
 
       </div>
 
-      <!-- Monthly Summary Section / Footer Stats -->
+      <!-- Totais do Mês -->
       <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-indigo-500 flex items-center justify-between shadow-xl">
           <div>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total do Mês</p>
-            <h3 id="monthTotalBills" class="text-2xl font-extrabold text-white mt-1">R$ 0,00</h3>
-            <p id="monthBillsCount" class="text-[11px] text-slate-400 mt-0.5">0 conta(s)</p>
-          </div>
-          <div class="w-11 h-11 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl border border-indigo-500/20 shadow-inner">
-            <i class="fa-solid fa-wallet"></i>
-          </div>
-        </div>
-
-        <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-amber-500 flex items-center justify-between shadow-xl">
-          <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pendente a Pagar</p>
-            <h3 id="monthPendingBills" class="text-2xl font-extrabold text-amber-400 mt-1">R$ 0,00</h3>
-            <p id="monthPendingCount" class="text-[11px] text-slate-400 mt-0.5">0 pendente(s)</p>
-          </div>
-          <div class="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl border border-amber-500/20 shadow-inner">
-            <i class="fa-solid fa-hourglass-half"></i>
-          </div>
-        </div>
-
-        <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-emerald-500 flex items-center justify-between shadow-xl">
-          <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Pago</p>
-            <h3 id="monthPaidBills" class="text-2xl font-extrabold text-emerald-400 mt-1">R$ 0,00</h3>
-            <p id="monthPaidCount" class="text-[11px] text-slate-400 mt-0.5">0 paga(s)</p>
-          </div>
-          <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl border border-emerald-500/20 shadow-inner">
-            <i class="fa-solid fa-circle-check"></i>
-          </div>
-        </div>
-
-        <div class="glass-panel rounded-2xl p-4 border-l-4 border-l-pink-500 flex items-center justify-between shadow-xl">
-          <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total de Folgas</p>
-            <h3 id="monthTotalOffDays" class="text-2xl font-extrabold text-pink-400 mt-1">0 Dias</h3>
-            <p id="monthOffDaysBreakdown" class="text-[11px] text-slate-400 mt-0.5">Neste mês</p>
-          </div>
-          <div class="w-11 h-11 rounded-2xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-xl border border-pink-500/20 shadow-inner">
-            <i class="fa-solid fa-umbrella-beach"></i>
-          </div>
-        </div>
-      </section>
-
-    </div>
-
-  </div>
-
-  <!-- JavaScript Application Logic -->
-  <script>
-    const state = {
-      currentDate: new Date(),
-      selectedDateKey: formatDateKey(new Date()),
-      roomKey: localStorage.getItem('calendar_room_key') || 'minhas-contas-padrao',
-      manualOffDays: [],
-      bills: []
-    };
-
-    let unsubscribe = null;
-
-    const roomKeyInput = document.getElementById('roomKeyInput');
-    const btnChangeRoom = document.getElementById('btnChangeRoom');
-    const syncStatusText = document.getElementById('syncStatusText');
-    const syncIndicatorIcon = document.getElementById('syncIndicatorIcon');
-
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    const calendarAppScreen = document.getElementById('calendarAppScreen');
-    const enterCalendarBtn = document.getElementById('enterCalendarBtn');
-    const backToWelcomeBtn = document.getElementById('backToWelcomeBtn');
-
-    const calendarGrid = document.getElementById('calendarGrid');
-    const currentMonthYear = document.getElementById('currentMonthYear');
-    const prevMonthBtn = document.getElementById('prevMonthBtn');
-    const nextMonthBtn = document.getElementById('nextMonthBtn');
-    const todayBtn = document.getElementById('todayBtn');
-
-    const selectedDayTitle = document.getElementById('selectedDayTitle');
-    const selectedDaySubtitle = document.getElementById('selectedDaySubtitle');
-    const selectedDayBadge = document.getElementById('selectedDayBadge');
-    const toggleOffDayBtn = document.getElementById('toggleOffDayBtn');
-    const dayBillsList = document.getElementById('dayBillsList');
-    const dayTotalBadge = document.getElementById('dayTotalBadge');
-    const addBillForm = document.getElementById('addBillForm');
-
-    const monthTotalBills = document.getElementById('monthTotalBills');
-    const monthBillsCount = document.getElementById('monthBillsCount');
-    const monthPendingBills = document.getElementById('monthPendingBills');
-    const monthPendingCount = document.getElementById('monthPendingCount');
-    const monthPaidBills = document.getElementById('monthPaidBills');
-    const monthPaidCount = document.getElementById('monthPaidCount');
-    const monthTotalOffDays = document.getElementById('monthTotalOffDays');
-    const monthOffDaysBreakdown = document.getElementById('monthOffDaysBreakdown');
-
-    function initApp() {
-      roomKeyInput.value = state.roomKey;
-      setupFirebaseSync();
-    }
-
-    function setupFirebaseSync() {
-      const key = roomKeyInput.value.trim() || 'minhas-contas-padrao';
-      state.roomKey = key;
-      localStorage.setItem('calendar_room_key', key);
-
-      updateSyncStatus(false, 'Sincronizando...');
-
-      if (unsubscribe) unsubscribe();
-
-      if (window.db && window.doc && window.onSnapshot) {
-        const docRef = window.doc(window.db, "calendars", state.roomKey);
-        unsubscribe = window.onSnapshot(docRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            state.manualOffDays = Array.isArray(data.manualOffDays) ? data.manualOffDays : [];
-            state.bills = Array.isArray(data.bills) ? data.bills : [];
-          } else {
-            state.manualOffDays = [];
-            state.bills = [];
-          }
-          renderAll();
-          updateSyncStatus(true, `Firebase conectado (${state.roomKey})`);
-        }, (err) => {
-          console.error(err);
-          updateSyncStatus(false, 'Erro de Sincronização');
-        });
-      } else {
-        setTimeout(setupFirebaseSync, 500);
-      }
-    }
-
-    function saveData() {
-      renderAll();
-      if (window.db && window.doc && window.setDoc) {
-        const docRef = window.doc(window.db, "calendars", state.roomKey);
-        window.setDoc(docRef, {
-          manualOffDays: state.manualOffDays,
-          bills: state.bills,
-          updatedAt: new Date().toISOString()
-        });
-      }
-    }
-
-    function updateSyncStatus(isOk, msg) {
-      syncStatusText.textContent = msg;
-      if (isOk) {
-        syncIndicatorIcon.className = "w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]";
-      } else {
-        syncIndicatorIcon.className = "w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]";
-      }
-    }
-
-    function formatDateKey(dateObj) {
-      const y = dateObj.getFullYear();
-      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const d = String(dateObj.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    }
-
-    function parseDateKey(keyStr) {
-      const [y, m, d] = keyStr.split('-').map(Number);
-      return new Date(y, m - 1, d);
-    }
-
-    function isOffDay(dateObj) {
-      const key = formatDateKey(dateObj);
-      return state.manualOffDays.includes(key);
-    }
-
-    function getAdjustedPaymentDate(originalDueDateKey) {
-      let currentDate = parseDateKey(originalDueDateKey);
-      let wasShifted = false;
-
-      while (isOffDay(currentDate)) {
-        currentDate.setDate(currentDate.getDate() - 1);
-        wasShifted = true;
-      }
-
-      return {
-        adjustedDateKey: formatDateKey(currentDate),
-        wasShifted
-      };
-    }
-
-    function renderWelcomeScreenData() {
-      const now = new Date();
-      const hours = now.getHours();
-      let greeting = "Olá!";
-
-      if (hours >= 5 && hours < 12) greeting = "Bom dia! ☀️";
-      else if (hours >= 12 && hours < 18) greeting = "Boa tarde! 🌤️";
-      else greeting = "Boa noite! 🌙";
-
-      const dayOfWeekName = now.toLocaleDateString('pt-BR', { weekday: 'long' });
-      const capitalizedDay = dayOfWeekName.charAt(0).toUpperCase() + dayOfWeekName.slice(1);
-
-      document.getElementById('welcomeGreeting').textContent = `${greeting} Hoje é ${capitalizedDay}.`;
-
-      // Status do dia de hoje
-      const todayOff = isOffDay(now);
-      const statusText = document.getElementById('welcomeStatusText');
-      const statusIcon = document.getElementById('welcomeStatusIcon');
-
-      if (todayOff) {
-        statusText.textContent = "Dia de Folga! 🏖️";
-        statusIcon.className = "w-11 h-11 rounded-2xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-lg border border-pink-500/20 shrink-0";
-        statusIcon.innerHTML = `<i class="fa-solid fa-umbrella-beach"></i>`;
-      } else {
-        statusText.textContent = "Dia de Trabalho 💼";
-        statusIcon.className = "w-11 h-11 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20 shrink-0";
-        statusIcon.innerHTML = `<i class="fa-solid fa-briefcase"></i>`;
-      }
-
-      // Contas pendentes para hoje
-      const todayKey = formatDateKey(now);
-      const todayBills = state.bills.filter(bill => {
-        const { adjustedDateKey } = getAdjustedPaymentDate(bill.originalDueDate);
-        return adjustedDateKey === todayKey && bill.status === 'pending';
-      });
-
-      const totalTodayPending = todayBills.reduce((acc, b) => acc + Number(b.amount), 0);
-      const billsTextEl = document.getElementById('welcomeBillsText');
-      const summaryTextEl = document.getElementById('welcomeDailySummary');
-
-      if (todayBills.length === 0) {
-        billsTextEl.textContent = "Nenhuma pendência 🎉";
-        summaryTextEl.textContent = `Você não tem contas pendentes para pagar hoje (${capitalizedDay}). Aproveite o seu dia!`;
-      } else {
-        billsTextEl.textContent = `R$ ${totalTodayPending.toFixed(2)}`;
-        summaryTextEl.textContent = `Você tem ${todayBills.length} conta(s) pendente(s) para pagar hoje no valor total de R$ ${totalTodayPending.toFixed(2)}.`;
-      }
-    }
-
-    function renderAll() {
-      renderWelcomeScreenData();
-      renderCalendar();
-      renderSelectedDayDetails();
-      renderMonthlySummary();
-    }
-
-    // Navegação entre telas
-    enterCalendarBtn.addEventListener('click', () => {
-      welcomeScreen.classList.add('hidden');
-      calendarAppScreen.classList.remove('hidden');
-    });
-
-    backToWelcomeBtn.addEventListener('click', () => {
-      calendarAppScreen.classList.add('hidden');
-      welcomeScreen.classList.remove('hidden');
-    });
-
-    function renderCalendar() {
-      const year = state.currentDate.getFullYear();
-      const month = state.currentDate.getMonth();
-
-      const monthFormatter = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' });
-      currentMonthYear.textContent = monthFormatter.format(state.currentDate);
-
-      calendarGrid.innerHTML = '';
-
-      const firstDayOfMonth = new Date(year, month, 1);
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const startDayIndex = firstDayOfMonth.getDay();
-
-      const dayBillsMap = {};
-      state.bills.forEach(bill => {
-        const { adjustedDateKey } = getAdjustedPaymentDate(bill.originalDueDate);
-        if (!dayBillsMap[adjustedDateKey]) {
-          dayBillsMap[adjustedDateKey] = [];
-        }
-        dayBillsMap[adjustedDateKey].push(bill);
-      });
-
-      for (let i = 0; i < startDayIndex; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = "h-20 md:h-24 bg-dark-900/40 rounded-2xl border border-slate-900/50 opacity-20 pointer-events-none";
-        calendarGrid.appendChild(emptyCell);
-      }
-
-      const todayKey = formatDateKey(new Date());
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateObj = new Date(year, month, day);
-        const dateKey = formatDateKey(dateObj);
-        const isOff = isOffDay(dateObj);
-        
-        const billsForDay = dayBillsMap[dateKey] || [];
-        const totalAmountForDay = billsForDay.reduce((acc, b) => acc + Number(b.amount), 0);
-        const hasPending = billsForDay.some(b => b.status === 'pending');
-
-        const isSelected = dateKey === state.selectedDateKey;
-        const isToday = dateKey === todayKey;
-
-        const dayCell = document.createElement('div');
-        let borderBgClass = "bg-dark-800/60 border-slate-800/80 hover:border-slate-700/80 hover:bg-dark-700/50";
-        
-        if (isSelected) {
-          borderBgClass = "bg-purple-900/30 border-purple-500 shadow-xl shadow-purple-950/50 ring-2 ring-purple-500/40";
-        } else if (isToday) {
-          borderBgClass = "bg-slate-800/70 border-purple-400/60";
-        }
-
-        if (isOff && !isSelected) {
-          borderBgClass += " bg-pink-950/10 border-pink-500/30";
-        }
-
-        dayCell.className = `h-20 md:h-24 p-1.5 md:p-2 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between relative overflow-hidden group ${borderBgClass}`;
-
-        let dayHeaderHTML = `<div class="flex items-center justify-between w-full">`;
-        const numColor = isToday ? "text-purple-300 font-extrabold bg-purple-500/20 px-1.5 py-0.5 rounded-md" : "text-slate-200 font-semibold";
-        dayHeaderHTML += `<span class="text-xs md:text-sm ${numColor}">${day}</span>`;
-
-        if (isOff) {
-          dayHeaderHTML += `<span class="text-[9px] px-1.5 py-0.5 rounded-md bg-pink-500/20 text-pink-300 font-bold border border-pink-500/30 shadow-[0_0_8px_rgba(236,72,153,0.3)]">Folga</span>`;
-        }
-
-        dayHeaderHTML += `</div>`;
-
-        let billsContentHTML = `<div>`;
-        if (totalAmountForDay > 0) {
-          const hasShiftedBill = billsForDay.some(b => b.originalDueDate !== dateKey);
-          let badgeColorClass = hasPending 
-            ? "bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-[0_0_8px_rgba(251,191,36,0.2)]" 
-            : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-[0_0_8px_rgba(52,211,153,0.2)]";
-
-          billsContentHTML += `
-            <div class="mt-1 px-1.5 py-1 rounded-xl border ${badgeColorClass} text-[10px] md:text-xs font-bold truncate flex items-center justify-between">
-              <span>R$ ${totalAmountForDay.toFixed(2)}</span>
-              ${hasShiftedBill ? '<i class="fa-solid fa-clock-rotate-left text-[9px] text-amber-400" title="Contém pagamento antecipado por folga"></i>' : ''}
-            </div>
-          `;
-        }
-        billsContentHTML += `</div>`;
-
-        dayCell.innerHTML = dayHeaderHTML + billsContentHTML;
-
-        dayCell.addEventListener('click', () => {
-          state.selectedDateKey = dateKey;
-          renderCalendar();
-          renderSelectedDayDetails();
-        });
-
-        calendarGrid.appendChild(dayCell);
-      }
-    }
-
-    function renderSelectedDayDetails() {
-      const dateObj = parseDateKey(state.selectedDateKey);
-      const isOff = isOffDay(dateObj);
-
-      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-      const formattedTitle = new Intl.DateTimeFormat('pt-BR', options).format(dateObj);
-      selectedDayTitle.textContent = formattedTitle.charAt(0).toUpperCase() + formattedTitle.slice(1);
-      selectedDaySubtitle.textContent = `Data selecionada: ${state.selectedDateKey}`;
-
-      if (isOff) {
-        selectedDayBadge.textContent = 'Dia de Folga';
-        selectedDayBadge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-pink-500/20 text-pink-300 border border-pink-500/40 shadow-[0_0_10px_rgba(236,72,153,0.2)]';
-        toggleOffDayBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/30 transition shadow-sm';
-        toggleOffDayBtn.innerHTML = '<i class="fa-solid fa-briefcase"></i> Mudar p/ Trabalho';
-      } else {
-        selectedDayBadge.textContent = 'Dia Útil / Trabalho';
-        selectedDayBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700';
-        toggleOffDayBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-pink-500/20 text-pink-300 hover:bg-pink-500/30 border border-pink-500/30 transition shadow-sm';
-        toggleOffDayBtn.innerHTML = '<i class="fa-solid fa-umbrella-beach"></i> Marcar Folga';
-      }
-
-      const billsForThisDay = state.bills.filter(bill => {
-        const { adjustedDateKey } = getAdjustedPaymentDate(bill.originalDueDate);
-        return adjustedDateKey === state.selectedDateKey;
-      });
-
-      const dayTotal = billsForThisDay.reduce((acc, b) => acc + Number(b.amount), 0);
-      dayTotalBadge.textContent = `R$ ${dayTotal.toFixed(2)}`;
-
-      dayBillsList.innerHTML = '';
-      if (billsForThisDay.length === 0) {
-        dayBillsList.innerHTML = `
-          <div class="text-center py-8 text-slate-500 text-xs italic bg-dark-900/40 rounded-2xl border border-slate-800/50">
-            Nenhuma conta agendada para este dia.
-          </div>
-        `;
-      } else {
-        billsForThisDay.forEach(bill => {
-          const isShifted = bill.originalDueDate !== state.selectedDateKey;
-          const isPaid = bill.status === 'paid';
-
-          const billCard = document.createElement('div');
-          billCard.className = `bg-dark-900/90 border rounded-2xl p-3 text-xs flex items-center justify-between transition shadow-md ${
-            isPaid ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-amber-500/30 bg-amber-950/10'
-          }`;
-
-          billCard.innerHTML = `
-            <div class="space-y-1 max-w-[70%]">
-              <div class="font-bold text-white flex items-center gap-1.5 flex-wrap">
-                <span class="${isPaid ? 'line-through text-slate-400' : 'text-slate-100'}">${bill.title}</span>
-                ${isShifted ? '<span class="text-[9px] text-amber-300 bg-amber-500/20 px-1.5 py-0.2 rounded border border-amber-500/30 font-semibold"><i class="fa-solid fa-clock-rotate-left"></i> Antecipado</span>' : ''}
-              </div>
-              <div class="text-[11px] text-slate-400">
-                Valor: <span class="font-extrabold ${isPaid ? 'text-emerald-400' : 'text-amber-400'}">R$ ${Number(bill.amount).toFixed(2)}</span>
-              </div>
-              ${isShifted ? `<div class="text-[10px] text-slate-500">Vencimento original: ${bill.originalDueDate}</div>` : ''}
-            </div>
-
-            <div class="flex items-center gap-1.5">
-              <button 
-                onclick="window.toggleBillStatus('${bill.id}')"
-                class="px-2.5 py-1.5 rounded-xl font-bold text-[11px] transition flex items-center gap-1 shadow-sm ${
-                  isPaid 
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30' 
-                    : 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
-                }" 
-                title="Alternar entre Paga e Pendente">
-                ${isPaid ? '✅ Paga' : '⏳ Pendente'}
-              </button>
-              <button 
-                onclick="window.deleteBill('${bill.id}')" 
-                class="text-slate-500 hover:text-rose-400 p-1.5 transition active:scale-90" 
-                title="Excluir conta">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </div>
-          `;
-          dayBillsList.appendChild(billCard);
-        });
-      }
-    }
-
-    function renderMonthlySummary() {
-      const year = state.currentDate.getFullYear();
-      const month = state.currentDate.getMonth();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const monthStr = String(month + 1).padStart(2, '0');
-
-      let monthlyTotal = 0;
-      let monthlyCount = 0;
-      let pendingTotal = 0;
-      let pendingCount = 0;
-      let paidTotal = 0;
-      let paidCount = 0;
-      let offDaysCount = 0;
-
-      for (let d = 1; d <= daysInMonth; d++) {
-        const dateObj = new Date(year, month, d);
-        if (isOffDay(dateObj)) offDaysCount++;
-      }
-
-      state.bills.forEach(bill => {
-        const { adjustedDateKey } = getAdjustedPaymentDate(bill.originalDueDate);
-        if (adjustedDateKey.startsWith(`${year}-${monthStr}`)) {
-          const amt = Number(bill.amount);
-          monthlyTotal += amt;
-          monthlyCount++;
-
-          if (bill.status === 'paid') {
-            paidTotal += amt;
-            paidCount++;
-          } else {
-            pendingTotal += amt;
-            pendingCount++;
-          }
-        }
-      });
-
-      monthTotalBills.textContent = `R$ ${monthlyTotal.toFixed(2)}`;
-      monthBillsCount.textContent = `${monthlyCount} conta(s) cadastradas`;
-
-      monthPendingBills.textContent = `R$ ${pendingTotal.toFixed(2)}`;
-      monthPendingCount.textContent = `${pendingCount} conta(s) a pagar`;
-
-      monthPaidBills.textContent = `R$ ${paidTotal.toFixed(2)}`;
-      monthPaidCount.textContent = `${paidCount} conta(s) liquidadas`;
-
-      monthTotalOffDays.textContent = `${offDaysCount} Dias`;
-      monthOffDaysBreakdown.textContent = `Registradas no mês selecionado`;
-    }
-
-    window.toggleBillStatus = (id) => {
-      const bill = state.bills.find(b => b.id === id);
-      if (bill) {
-        bill.status = bill.status === 'paid' ? 'pending' : 'paid';
-        saveData();
-      }
-    };
-
-    window.deleteBill = (id) => {
-      state.bills = state.bills.filter(b => b.id !== id);
-      saveData();
-    };
-
-    toggleOffDayBtn.addEventListener('click', () => {
-      const index = state.manualOffDays.indexOf(state.selectedDateKey);
-      if (index > -1) {
-        state.manualOffDays.splice(index, 1);
-      } else {
-        state.manualOffDays.push(state.selectedDateKey);
-      }
-      saveData();
-    });
-
-    addBillForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const titleInput = document.getElementById('billTitleInput');
-      const amountInput = document.getElementById('billAmountInput');
-      const statusInput = document.getElementById('billStatusInput');
-
-      const title = titleInput.value.trim();
-      const amount = parseFloat(amountInput.value);
-      const status = statusInput.value;
-
-      if (!title || isNaN(amount) || amount <= 0) return;
-
-      const newBill = {
-        id: Date.now().toString(),
-        title,
-        amount,
-        originalDueDate: state.selectedDateKey,
-        status: status || 'pending'
-      };
-
-      state.bills.push(newBill);
-      saveData();
-
-      titleInput.value = '';
-      amountInput.value = '';
-    });
-
-    btnChangeRoom.addEventListener('click', setupFirebaseSync);
-
-    prevMonthBtn.addEventListener('click', () => {
-      state.currentDate.setMonth(state.currentDate.getMonth() - 1);
-      renderAll();
-    });
-
-    nextMonthBtn.addEventListener('click', () => {
-      state.currentDate.setMonth(state.currentDate.getMonth() + 1);
-      renderAll();
-    });
-
-    todayBtn.addEventListener('click', () => {
-      state.currentDate = new Date();
-      state.selectedDateKey = formatDateKey(new Date());
-      renderAll();
-    });
-
-    window.onload = initApp;
-  </script>
-</body>
-</html>
+            <h3 id="monthTotalBills"
