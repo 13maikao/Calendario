@@ -81,21 +81,73 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
-    .glass-panel { 
-      background: rgba(18, 20, 29, 0.85); 
-      backdrop-filter: blur(16px); 
-      border: 1px solid rgba(255, 255, 255, 0.08); 
+
+    /* Estilos Modo Escuro */
+    html.dark body {
+      background-color: #08090d;
+      color: #f1f5f9;
     }
-    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
+    html.dark .glass-panel {
+      background: rgba(18, 20, 29, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Estilos Modo Claro */
+    html:not(.dark) body {
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    html:not(.dark) .glass-panel {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+    html:not(.dark) .text-white {
+      color: #0f172a !important;
+    }
+    html:not(.dark) .text-slate-300, html:not(.dark) .text-slate-400 {
+      color: #475569 !important;
+    }
+    html:not(.dark) .bg-dark-900, 
+    html:not(.dark) .bg-dark-900\/80, 
+    html:not(.dark) .bg-dark-900\/90, 
+    html:not(.dark) .bg-dark-900\/40 {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+    }
+    html:not(.dark) .bg-dark-800 {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+    }
+    html:not(.dark) input, html:not(.dark) select {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 8px;
+    }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col items-center justify-center p-3 md:p-6 antialiased">
+<body class="min-h-screen p-3 md:p-6 pb-12 flex flex-col items-center justify-center antialiased">
 
-  <!-- ================= TELA DE LOGIN / AUTENTICAÇÃO ================= -->
   <div id="loginScreen" class="w-full max-w-md glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl border border-purple-500/30 text-center space-y-6 relative overflow-hidden bg-gradient-to-b from-dark-800/95 via-dark-800/90 to-purple-950/30">
-    
     <div class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-purple-500/30">
       <i class="fa-solid fa-shield-halved"></i>
     </div>
@@ -110,7 +162,7 @@
         <label class="block text-xs font-medium text-slate-400 mb-1">E-mail</label>
         <div class="relative">
           <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-500"></i>
-          <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full bg-dark-900 border border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder-slate-600 transition">
+          <input type="email" id="authEmail" required placeholder="seu@email.com" class="w-full bg-dark-900 border border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-purple-500 text-white placeholder-slate-600 transition">
         </div>
       </div>
 
@@ -118,7 +170,7 @@
         <label class="block text-xs font-medium text-slate-400 mb-1">Senha</label>
         <div class="relative">
           <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-500"></i>
-          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-dark-900 border border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-white placeholder-slate-600 transition">
+          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full bg-dark-900 border border-slate-800 rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-purple-500 text-white placeholder-slate-600 transition">
         </div>
       </div>
 
@@ -137,115 +189,275 @@
     </form>
   </div>
 
-  <!-- ================= APLICAÇÃO PRINCIPAL ================= -->
   <div id="mainAppContainer" class="w-full max-w-4xl space-y-5 hidden">
     
-    <!-- Top Bar -->
+    <!-- Top Bar: Sync + Seletor de Tema + Sair -->
     <div class="glass-panel rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-xl border-purple-500/20">
+      
+      <!-- Status de Sincronização -->
       <div class="flex items-center space-x-2.5">
         <span id="syncIndicatorIcon" class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]"></span>
-        <span id="syncStatusText" class="font-medium text-slate-300">A sincronizar...</span>
+        <span id="syncStatusText" class="font-medium text-slate-300">A iniciar...</span>
       </div>
 
-      <div class="flex items-center gap-3">
+      <!-- Controles: Tema + Sair -->
+      <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+        
+        <!-- Seletor de Tema com 3 Botões -->
+        <div class="flex items-center gap-1 bg-dark-900/80 p-1 rounded-xl border border-slate-700/80">
+          <button id="themeLightBtn" onclick="setAppTheme('light')" class="p-1.5 px-2 rounded-lg text-slate-400 hover:text-amber-400 transition" title="Tema Claro">
+            <i class="fa-solid fa-sun"></i>
+          </button>
+          <button id="themeDarkBtn" onclick="setAppTheme('dark')" class="p-1.5 px-2 rounded-lg text-slate-400 hover:text-purple-400 transition" title="Tema Escuro">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          <button id="themeSystemBtn" onclick="setAppTheme('system')" class="p-1.5 px-2 rounded-lg text-slate-400 hover:text-blue-400 transition" title="Tema do Sistema">
+            <i class="fa-solid fa-desktop"></i>
+          </button>
+        </div>
+
         <button onclick="logout()" class="bg-dark-800 hover:bg-rose-500/20 hover:text-rose-300 text-slate-300 p-2 px-3 rounded-xl transition border border-slate-700 flex items-center gap-1.5" title="Sair">
           <i class="fa-solid fa-right-from-bracket text-rose-400"></i> Sair
         </button>
+
       </div>
     </div>
 
-    <!-- TELA DE BOAS-VINDAS -->
     <div id="welcomeScreen" class="glass-panel rounded-3xl p-6 md:p-10 shadow-2xl border border-purple-500/30 text-center space-y-6 relative overflow-hidden bg-gradient-to-b from-dark-800/90 via-dark-800/80 to-purple-950/20">
+      
       <div class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-purple-500/30">
         <i class="fa-solid fa-wallet"></i>
       </div>
+
       <div class="space-y-2 max-w-lg mx-auto">
-        <h1 id="welcomeGreeting" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Olá!</h1>
-        <p id="welcomeDailySummary" class="text-sm md:text-base text-slate-300 leading-relaxed font-medium">A carregar...</p>
+        <h1 id="welcomeGreeting" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+          Olá!
+        </h1>
+        <p id="welcomeDailySummary" class="text-sm md:text-base text-slate-300 leading-relaxed font-medium">
+          A verificar as contas e folgas de hoje...
+        </p>
       </div>
+
+      <!-- Cards Informativos -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto pt-2">
         <div class="bg-dark-900/80 border border-slate-800 p-4 rounded-2xl flex items-center gap-3.5 shadow-inner text-left">
-          <div id="welcomeStatusIcon" class="w-11 h-11 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20 shrink-0"><i class="fa-solid fa-briefcase"></i></div>
-          <div><p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Escala de Hoje</p><h4 id="welcomeStatusText" class="text-xs font-extrabold text-white mt-0.5">Trabalho 💼</h4></div>
+          <div id="welcomeStatusIcon" class="w-11 h-11 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20 shrink-0">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Escala de Hoje</p>
+            <h4 id="welcomeStatusText" class="text-xs font-extrabold text-white mt-0.5">Trabalho 💼</h4>
+          </div>
         </div>
+
         <div class="bg-dark-900/80 border border-slate-800 p-4 rounded-2xl flex items-center gap-3.5 shadow-inner text-left">
-          <div class="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg border border-amber-500/20 shrink-0"><i class="fa-solid fa-receipt"></i></div>
-          <div><p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Contas Hoje</p><h4 id="welcomeBillsText" class="text-xs font-extrabold text-amber-300 mt-0.5">R$ 0,00</h4></div>
+          <div class="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg border border-amber-500/20 shrink-0">
+            <i class="fa-solid fa-receipt"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Contas Hoje</p>
+            <h4 id="welcomeBillsText" class="text-xs font-extrabold text-amber-300 mt-0.5">R$ 0,00</h4>
+          </div>
         </div>
       </div>
-      <div class="pt-4">
-        <button id="enterCalendarBtn" class="w-full max-w-md bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-sm md:text-base rounded-2xl py-3.5 transition shadow-xl shadow-purple-600/30 flex items-center justify-center gap-2 mx-auto">
-          <span>Abrir Calendário & Finanças</span><i class="fa-solid fa-arrow-right"></i>
+
+      <div class="pt-4 max-w-md mx-auto">
+        <button 
+          id="enterCalendarBtn"
+          class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-98 text-white font-bold text-sm md:text-base rounded-2xl py-3.5 transition shadow-xl shadow-purple-600/30 flex items-center justify-center gap-2">
+          <span>Abrir Calendário & Finanças</span>
+          <i class="fa-solid fa-arrow-right"></i>
         </button>
       </div>
+
     </div>
 
-    <!-- TELA DO CALENDÁRIO COMPLETO -->
     <div id="calendarAppScreen" class="space-y-5 hidden">
+      
+      <!-- Botão Voltar -->
       <div class="flex items-center justify-between">
-        <button id="backToWelcomeBtn" class="bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center gap-2">
+        <button 
+          id="backToWelcomeBtn"
+          class="bg-dark-800 hover:bg-dark-700 text-slate-300 hover:text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center gap-2">
           <i class="fa-solid fa-arrow-left"></i> Voltar ao Início
         </button>
       </div>
+
+      <!-- Header / Navigation Bar -->
       <header class="glass-panel rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl">
         <div class="flex items-center space-x-3.5">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-purple-500/30"><i class="fa-solid fa-calendar-days"></i></div>
-          <div><h2 class="text-xl font-extrabold tracking-tight text-white">Calendário & Financeiro</h2><p class="text-xs text-slate-400">Protegido e Sincronizado</p></div>
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 text-white flex items-center justify-center text-xl font-bold shadow-lg shadow-purple-500/30">
+            <i class="fa-solid fa-calendar-days"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+              Calendário & Financeiro
+            </h2>
+            <p class="text-xs text-slate-400">Gerenciador de Folgas e Contas Ajustável</p>
+          </div>
         </div>
+
+        <!-- Navegação de Mês -->
         <div class="flex items-center space-x-2 bg-dark-900/90 p-1.5 rounded-2xl border border-slate-800/80 shadow-inner">
-          <button id="prevMonthBtn" class="p-2 hover:bg-slate-800 rounded-xl text-slate-300 transition"><i class="fa-solid fa-chevron-left"></i></button>
-          <button id="todayBtn" class="px-3 py-1.5 hover:bg-slate-800 rounded-xl text-xs font-bold text-purple-400 transition">Hoje</button>
-          <span id="currentMonthYear" class="px-3 font-bold text-sm md:text-base text-purple-200 min-w-[140px] text-center capitalize">Carregando...</span>
-          <button id="nextMonthBtn" class="p-2 hover:bg-slate-800 rounded-xl text-slate-300 transition"><i class="fa-solid fa-chevron-right"></i></button>
+          <button id="prevMonthBtn" class="p-2 hover:bg-slate-800 active:scale-90 rounded-xl text-slate-300 hover:text-white transition" title="Mês Anterior">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button id="todayBtn" class="px-3 py-1.5 hover:bg-slate-800 active:scale-95 rounded-xl text-xs font-bold text-purple-400 hover:text-purple-300 transition" title="Ir para hoje">
+            Hoje
+          </button>
+          <span id="currentMonthYear" class="px-3 font-bold text-sm md:text-base text-purple-200 min-w-[140px] text-center capitalize">
+            Carregando...
+          </span>
+          <button id="nextMonthBtn" class="p-2 hover:bg-slate-800 active:scale-90 rounded-xl text-slate-300 hover:text-white transition" title="Próximo Mês">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
         </div>
       </header>
 
+      <!-- Main Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Calendar View -->
         <div class="lg:col-span-2 glass-panel rounded-2xl p-4 md:p-6 shadow-2xl">
           <div class="grid grid-cols-7 mb-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
-            <div class="text-rose-400">Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div class="text-purple-400">Sáb</div>
+            <div class="text-rose-400">Dom</div>
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div class="text-purple-400">Sáb</div>
           </div>
+
           <div id="calendarGrid" class="grid grid-cols-7 gap-1.5 md:gap-2.5"></div>
         </div>
 
+        <!-- Selected Day Panel -->
         <div class="glass-panel rounded-2xl p-5 shadow-2xl flex flex-col justify-between space-y-4">
           <div>
             <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
-              <div><h3 id="selectedDayTitle" class="text-lg font-bold text-white">Selecione um dia</h3><p id="selectedDaySubtitle" class="text-xs text-slate-400">Detalhes</p></div>
-              <div id="selectedDayBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">-</div>
+              <span class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                <i class="fa-solid fa-user text-purple-400"></i> Status de Trabalho:
+              </span>
+              <button id="toggleOffDayBtn" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow-md"></button>
             </div>
-            <div class="mb-5 bg-dark-900/80 p-3.5 rounded-2xl border border-slate-800/80 flex items-center justify-between shadow-inner">
-              <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5"><i class="fa-solid fa-user-clock text-purple-400"></i> Trabalho:</span>
-              <button id="toggleOffDayBtn" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md"></button>
-            </div>
+
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Contas Hoje</h4>
+                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fa-solid fa-receipt text-indigo-400"></i> CONTAS AGENDADAS HOJE
+                </h4>
                 <span id="dayTotalBadge" class="text-xs font-extrabold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">R$ 0,00</span>
               </div>
+
               <div id="dayBillsList" class="space-y-2 max-h-52 overflow-y-auto custom-scrollbar pr-1"></div>
             </div>
           </div>
+
+          <!-- Form Adicionar Conta -->
           <div class="border-t border-slate-800/80 pt-4 mt-2">
-            <h4 class="text-xs font-bold text-slate-200 mb-2.5"><i class="fa-solid fa-circle-plus text-purple-400"></i> Adicionar Conta</h4>
+            <h4 class="text-xs font-bold text-slate-200 mb-2.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-plus text-purple-400"></i> Adicionar Nova Conta
+            </h4>
             <form id="addBillForm" class="space-y-2.5">
-              <input type="text" id="billTitleInput" placeholder="Nome da conta" required class="w-full bg-dark-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500" />
+              <input 
+                type="text" 
+                id="billTitleInput" 
+                placeholder="Nome da conta (ex: Luz, Internet, Cartão)" 
+                required 
+                class="w-full bg-dark-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition shadow-inner"
+              />
               <div class="grid grid-cols-2 gap-2">
-                <input type="number" step="0.01" id="billAmountInput" placeholder="Valor (R$)" required class="bg-dark-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500" />
-                <select id="billStatusInput" class="bg-dark-900 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-white focus:outline-none focus:border-purple-500">
+                <input 
+                  type="number" 
+                  step="0.01" 
+                  id="billAmountInput" 
+                  placeholder="Valor (R$)" 
+                  required 
+                  class="bg-dark-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition shadow-inner"
+                />
+                <select 
+                  id="billStatusInput"
+                  class="bg-dark-900 border border-slate-700/80 rounded-xl px-2 py-2 text-xs text-white focus:outline-none focus:border-purple-500 transition shadow-inner font-medium">
                   <option value="pending">⏳ Pendente</option>
                   <option value="paid">✅ Paga</option>
                 </select>
               </div>
-              <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-bold text-xs rounded-xl py-2.5 transition shadow-lg shadow-purple-600/25">Salvar Conta</button>
+              <div class="flex items-center gap-2 pt-1">
+                <input type="checkbox" id="billRepeatMonthly" class="w-4 h-4 rounded text-purple-600 border-slate-700 focus:ring-purple-500">
+                <label for="billRepeatMonthly" class="text-xs text-slate-400">Repetir todo mês (12x)</label>
+              </div>
+              <button 
+                type="submit" 
+                class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-bold text-xs rounded-xl py-2.5 transition shadow-lg shadow-purple-600/25 flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-plus"></i> Salvar Conta
+              </button>
             </form>
+
+            <p class="text-[10px] text-slate-500 mt-3 text-center italic">
+              *Se o vencimento cair numa folga, o pagamento será automaticamente ajustado para o dia útil anterior.
+            </p>
           </div>
         </div>
+
       </div>
+
+      <!-- Cards Informativos do Mês Selecionado (Rodapé do App) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+        
+        <!-- Total do Mês -->
+        <div class="glass-panel rounded-2xl p-4 flex items-center justify-between border-slate-800">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">TOTAL DO MÊS</p>
+            <h3 id="monthTotalAmount" class="text-xl md:text-2xl font-extrabold text-white mt-1">R$ 0.00</h3>
+            <p id="monthTotalCount" class="text-[11px] text-slate-500 mt-0.5">0 conta(s) cadastradas</p>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center justify-center text-lg shrink-0">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+        </div>
+
+        <!-- Pendente a Pagar -->
+        <div class="glass-panel rounded-2xl p-4 flex items-center justify-between border-slate-800">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">PENDENTE A PAGAR</p>
+            <h3 id="monthPendingAmount" class="text-xl md:text-2xl font-extrabold text-amber-400 mt-1">R$ 0.00</h3>
+            <p id="monthPendingCount" class="text-[11px] text-slate-500 mt-0.5">0 conta(s) a pagar</p>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center text-lg shrink-0">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+        </div>
+
+        <!-- Total Pago -->
+        <div class="glass-panel rounded-2xl p-4 flex items-center justify-between border-slate-800">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">TOTAL PAGO</p>
+            <h3 id="monthPaidAmount" class="text-xl md:text-2xl font-extrabold text-emerald-400 mt-1">R$ 0.00</h3>
+            <p id="monthPaidCount" class="text-[11px] text-slate-500 mt-0.5">0 conta(s) liquidadas</p>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-lg shrink-0">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+        </div>
+
+        <!-- Total de Folgas -->
+        <div class="glass-panel rounded-2xl p-4 flex items-center justify-between border-slate-800">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">TOTAL DE FOLGAS</p>
+            <h3 id="monthOffDaysCount" class="text-xl md:text-2xl font-extrabold text-pink-400 mt-1">0 Dias</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Registradas no mês selecionado</p>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-pink-500/10 text-pink-400 border border-pink-500/20 flex items-center justify-center text-lg shrink-0">
+            <i class="fa-solid fa-umbrella-beach"></i>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </div>
 
-  <!-- JavaScript Principal -->
   <script>
     let isRegisterMode = false;
     const state = {
@@ -253,13 +465,54 @@
       selectedDateKey: '',
       userId: null,
       manualOffDays: [],
-      bills: []
+      bills: [],
+      theme: 'system'
     };
     state.selectedDateKey = formatDateKey(state.currentDate);
     let unsubscribe = null;
 
-    // Monitorar Autenticação do Firebase
+    function setAppTheme(themeMode) {
+      state.theme = themeMode;
+      applyTheme(themeMode);
+      saveData();
+    }
+
+    function applyTheme(themeMode) {
+      const isSystemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const useDark = themeMode === 'dark' || (themeMode === 'system' && isSystemDark);
+
+      if (useDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      const activeClass = 'bg-purple-600 text-white font-bold shadow-sm';
+      const inactiveClass = 'text-slate-400 hover:text-purple-400';
+
+      ['Light', 'Dark', 'System'].forEach(mode => {
+        const btn = document.getElementById(`theme${mode}Btn`);
+        if (btn) {
+          btn.className = mode.toLowerCase() === themeMode 
+            ? `p-1.5 px-2 rounded-lg transition ${activeClass}` 
+            : `p-1.5 px-2 rounded-lg transition ${inactiveClass}`;
+        }
+      });
+    }
+
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (state.theme === 'system') {
+          applyTheme('system');
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('app_theme') || 'system';
+      state.theme = savedTheme;
+      applyTheme(savedTheme);
+
       const checkAuthInterval = setInterval(() => {
         if (window.firebaseReady && window.auth) {
           clearInterval(checkAuthInterval);
@@ -277,7 +530,6 @@
         }
       }, 200);
 
-      // Eventos dos botões de navegação e formulários
       document.getElementById('enterCalendarBtn')?.addEventListener('click', () => {
         document.getElementById('welcomeScreen').classList.add('hidden');
         document.getElementById('calendarAppScreen').classList.remove('hidden');
@@ -290,12 +542,12 @@
 
       document.getElementById('prevMonthBtn')?.addEventListener('click', () => {
         state.currentDate.setMonth(state.currentDate.getMonth() - 1);
-        renderCalendar();
+        renderAll();
       });
 
       document.getElementById('nextMonthBtn')?.addEventListener('click', () => {
         state.currentDate.setMonth(state.currentDate.getMonth() + 1);
-        renderCalendar();
+        renderAll();
       });
 
       document.getElementById('todayBtn')?.addEventListener('click', () => {
@@ -319,19 +571,27 @@
         const title = document.getElementById('billTitleInput').value.trim();
         const amount = document.getElementById('billAmountInput').value;
         const status = document.getElementById('billStatusInput').value;
+        const repeatMonthly = document.getElementById('billRepeatMonthly').checked;
 
         if (!title || !amount) return;
 
-        state.bills.push({
-          id: Date.now().toString(),
-          title,
-          amount: parseFloat(amount),
-          originalDueDate: state.selectedDateKey,
-          status
-        });
+        const baseDate = parseDateKey(state.selectedDateKey);
+        const repeatCount = repeatMonthly ? 12 : 1;
+
+        for (let i = 0; i < repeatCount; i++) {
+          const billDate = new Date(baseDate.getFullYear(), baseDate.getMonth() + i, baseDate.getDate());
+          state.bills.push({
+            id: Date.now().toString() + '_' + i,
+            title: repeatMonthly ? `${title} (${i+1}/12)` : title,
+            amount: parseFloat(amount),
+            originalDueDate: formatDateKey(billDate),
+            status: i === 0 ? status : 'pending'
+          });
+        }
 
         document.getElementById('billTitleInput').value = '';
         document.getElementById('billAmountInput').value = '';
+        document.getElementById('billRepeatMonthly').checked = false;
         saveData();
       });
     });
@@ -391,7 +651,6 @@
       return code;
     }
 
-    // Sincronização do Calendário com Firestore
     function setupFirebaseSync() {
       if (!state.userId) return;
       updateSyncStatus(false, 'Sincronizando...');
@@ -403,6 +662,10 @@
           const data = docSnap.data();
           state.manualOffDays = Array.isArray(data.manualOffDays) ? data.manualOffDays : [];
           state.bills = Array.isArray(data.bills) ? data.bills : [];
+          if (data.theme) {
+            state.theme = data.theme;
+            applyTheme(data.theme);
+          }
         } else {
           state.manualOffDays = [];
           state.bills = [];
@@ -416,12 +679,14 @@
     }
 
     function saveData() {
+      localStorage.setItem('app_theme', state.theme);
       renderAll();
       if (window.db && window.doc && window.setDoc && state.userId) {
         const docRef = window.doc(window.db, "user_calendars", state.userId);
         window.setDoc(docRef, {
           manualOffDays: state.manualOffDays,
           bills: state.bills,
+          theme: state.theme,
           updatedAt: new Date().toISOString()
         });
       }
@@ -432,7 +697,9 @@
       const syncIndicatorIcon = document.getElementById('syncIndicatorIcon');
       if (syncStatusText) syncStatusText.textContent = msg;
       if (syncIndicatorIcon) {
-        syncIndicatorIcon.className = isOk ? "w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" : "w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]";
+        syncIndicatorIcon.className = isOk 
+          ? "w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" 
+          : "w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]";
       }
     }
 
@@ -479,13 +746,54 @@
       });
       const totalToday = todayBills.reduce((acc, b) => acc + Number(b.amount), 0);
       document.getElementById('welcomeBillsText').textContent = todayBills.length === 0 ? "Nenhuma pendência 🎉" : `R$ ${totalToday.toFixed(2)}`;
-      document.getElementById('welcomeDailySummary').textContent = todayBills.length === 0 ? `Sem contas pendentes hoje. Aproveite!` : `Tem ${todayBills.length} conta(s) pendente(s) hoje no valor de R$ ${totalToday.toFixed(2)}.`;
+      document.getElementById('welcomeDailySummary').textContent = todayBills.length === 0 
+        ? `Sem contas pendentes hoje. Aproveite!` 
+        : `Tem ${todayBills.length} conta(s) pendente(s) hoje no valor de R$ ${totalToday.toFixed(2)}.`;
+    }
+
+    function renderMonthSummaryCards() {
+      const year = state.currentDate.getFullYear();
+      const month = state.currentDate.getMonth();
+
+      // Todas as contas cuja data ajustada cai no mês e ano selecionados
+      const monthBills = state.bills.filter(b => {
+        const { adjustedDateKey } = getAdjustedPaymentDate(b.originalDueDate);
+        const billDate = parseDateKey(adjustedDateKey);
+        return billDate.getFullYear() === year && billDate.getMonth() === month;
+      });
+
+      const totalAmount = monthBills.reduce((acc, b) => acc + Number(b.amount), 0);
+      const totalCount = monthBills.length;
+
+      const pendingBills = monthBills.filter(b => b.status === 'pending');
+      const pendingAmount = pendingBills.reduce((acc, b) => acc + Number(b.amount), 0);
+
+      const paidBills = monthBills.filter(b => b.status === 'paid');
+      const paidAmount = paidBills.reduce((acc, b) => acc + Number(b.amount), 0);
+
+      // Quantidade de dias de folga no mês atual
+      const monthOffDays = state.manualOffDays.filter(dateKey => {
+        const d = parseDateKey(dateKey);
+        return d.getFullYear() === year && d.getMonth() === month;
+      }).length;
+
+      document.getElementById('monthTotalAmount').textContent = `R$ ${totalAmount.toFixed(2)}`;
+      document.getElementById('monthTotalCount').textContent = `${totalCount} conta(s) cadastradas`;
+
+      document.getElementById('monthPendingAmount').textContent = `R$ ${pendingAmount.toFixed(2)}`;
+      document.getElementById('monthPendingCount').textContent = `${pendingBills.length} conta(s) a pagar`;
+
+      document.getElementById('monthPaidAmount').textContent = `R$ ${paidAmount.toFixed(2)}`;
+      document.getElementById('monthPaidCount').textContent = `${paidBills.length} conta(s) liquidadas`;
+
+      document.getElementById('monthOffDaysCount').textContent = `${monthOffDays} Dias`;
     }
 
     function renderAll() {
       renderWelcomeScreenData();
       renderCalendar();
       renderSelectedDayDetails();
+      renderMonthSummaryCards();
     }
 
     function renderCalendar() {
@@ -523,7 +831,13 @@
         const isSelected = dateKey === state.selectedDateKey;
         const isToday = dateKey === todayKey;
 
-        let borderClass = isSelected ? "border-purple-500 ring-2 ring-purple-500/40 bg-purple-900/30" : isToday ? "border-purple-400 bg-slate-800/70" : isOff ? "border-pink-500/30 bg-pink-950/10" : "border-slate-800 bg-dark-800/60";
+        let borderClass = isSelected 
+          ? "border-purple-500 ring-2 ring-purple-500/40 bg-purple-900/30" 
+          : isToday 
+          ? "border-purple-400 bg-slate-800/70" 
+          : isOff 
+          ? "border-pink-500/30 bg-pink-950/10" 
+          : "border-slate-800 bg-dark-800/60";
 
         const cell = document.createElement('div');
         cell.className = `h-20 md:h-24 p-1.5 md:p-2 rounded-2xl border cursor-pointer flex flex-col justify-between transition ${borderClass}`;
@@ -544,20 +858,13 @@
     function renderSelectedDayDetails() {
       const dateObj = parseDateKey(state.selectedDateKey);
       const isOff = isOffDay(dateObj);
-      document.getElementById('selectedDayTitle').textContent = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).format(dateObj);
-      document.getElementById('selectedDaySubtitle').textContent = `Data: ${state.selectedDateKey}`;
       
-      const badge = document.getElementById('selectedDayBadge');
       const toggleBtn = document.getElementById('toggleOffDayBtn');
       if (isOff) {
-        badge.textContent = 'Dia de Folga';
-        badge.className = 'px-3 py-1 rounded-full text-xs font-bold bg-pink-500/20 text-pink-300 border border-pink-500/40';
-        toggleBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30';
-        toggleBtn.innerHTML = '<i class="fa-solid fa-briefcase"></i> Mudar p/ Trabalho';
+        toggleBtn.className = 'px-3.5 py-2 rounded-xl text-xs font-bold bg-pink-500 text-white shadow-lg shadow-pink-500/30 hover:bg-pink-600 transition';
+        toggleBtn.innerHTML = '<i class="fa-solid fa-umbrella-beach"></i> Marcar Folga';
       } else {
-        badge.textContent = 'Dia Útil';
-        badge.className = 'px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700';
-        toggleBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30';
+        toggleBtn.className = 'px-3.5 py-2 rounded-xl text-xs font-semibold bg-dark-800 text-slate-300 hover:bg-slate-800 transition border border-slate-700';
         toggleBtn.innerHTML = '<i class="fa-solid fa-umbrella-beach"></i> Marcar Folga';
       }
 
@@ -565,7 +872,7 @@
       document.getElementById('dayTotalBadge').textContent = `R$ ${bills.reduce((acc, b) => acc + Number(b.amount), 0).toFixed(2)}`;
       
       const list = document.getElementById('dayBillsList');
-      list.innerHTML = bills.length === 0 ? '<div class="text-center py-6 text-slate-500 text-xs italic">Nenhuma conta agendada.</div>' : '';
+      list.innerHTML = bills.length === 0 ? '<div class="text-center py-6 text-slate-500 text-xs italic">Nenhuma conta agendada para este dia.</div>' : '';
       bills.forEach(b => {
         const isPaid = b.status === 'paid';
         const card = document.createElement('div');
@@ -588,6 +895,7 @@
       const b = state.bills.find(x => x.id === id);
       if (b) { b.status = b.status === 'paid' ? 'pending' : 'paid'; saveData(); }
     };
+
     window.deleteBill = (id) => {
       state.bills = state.bills.filter(x => x.id !== id);
       saveData();
