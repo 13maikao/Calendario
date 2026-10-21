@@ -119,6 +119,51 @@
       </div>
     </div>
 
+    <!-- SEÇÇÃO DE BOAS-VINDAS / DASHBOARD -->
+    <section class="glass-panel rounded-3xl p-5 md:p-7 shadow-2xl relative overflow-hidden border border-purple-500/20 bg-gradient-to-br from-dark-800/90 via-dark-800/70 to-purple-950/20">
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+        
+        <!-- Texto de Boas-Vindas -->
+        <div class="space-y-1.5 max-w-xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-semibold">
+            <i class="fa-solid fa-sparkles"></i> Painel Pessoal
+          </div>
+          <h1 id="welcomeGreeting" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+            Olá, bem-vindo! 👋
+          </h1>
+          <p id="welcomeSubtext" class="text-xs md:text-sm text-slate-400">
+            A carregar resumo do seu dia...
+          </p>
+        </div>
+
+        <!-- Cards Rápidos do Dia de Hoje -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full lg:w-auto">
+          <!-- Card Status Hoje -->
+          <div class="bg-dark-900/80 border border-slate-800 p-3.5 rounded-2xl flex items-center gap-3 shadow-inner">
+            <div id="todayStatusIcon" class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20">
+              <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Hoje é dia de:</p>
+              <h4 id="todayStatusText" class="text-xs font-extrabold text-white">Carregando...</h4>
+            </div>
+          </div>
+
+          <!-- Card Contas Hoje -->
+          <div class="bg-dark-900/80 border border-slate-800 p-3.5 rounded-2xl flex items-center gap-3 shadow-inner">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg border border-amber-500/20">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">A Pagar Hoje:</p>
+              <h4 id="todayBillsText" class="text-xs font-extrabold text-amber-300">R$ 0,00</h4>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- Header / Navigation Bar -->
     <header class="glass-panel rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl">
       <div class="flex items-center space-x-3.5">
@@ -126,10 +171,10 @@
           <i class="fa-solid fa-calendar-days"></i>
         </div>
         <div>
-          <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+          <h2 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
             Calendário & Financeiro
-          </h1>
-          <p class="text-xs md:text-sm text-slate-400">Gerenciador de Folgas e Contas Ajustável</p>
+          </h2>
+          <p class="text-xs text-slate-400">Gerenciador de Folgas e Contas Ajustável</p>
         </div>
       </div>
 
@@ -193,7 +238,7 @@
         <div>
           <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
             <div>
-              <h2 id="selectedDayTitle" class="text-lg font-bold text-white">Selecione um dia</h2>
+              <h3 id="selectedDayTitle" class="text-lg font-bold text-white">Selecione um dia</h3>
               <p id="selectedDaySubtitle" class="text-xs text-slate-400">Detalhes das contas e escala</p>
             </div>
             <div id="selectedDayBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">-</div>
@@ -208,9 +253,9 @@
 
           <div class="space-y-3">
             <div class="flex items-center justify-between">
-              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
                 <i class="fa-solid fa-receipt text-indigo-400"></i> Contas Agendadas Hoje
-              </h3>
+              </h4>
               <span id="dayTotalBadge" class="text-xs font-extrabold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">R$ 0,00</span>
             </div>
 
@@ -220,9 +265,9 @@
 
         <!-- Form Adicionar Conta -->
         <div class="border-t border-slate-800/80 pt-4 mt-2">
-          <h3 class="text-xs font-bold text-slate-200 mb-2.5 flex items-center gap-1.5">
+          <h4 class="text-xs font-bold text-slate-200 mb-2.5 flex items-center gap-1.5">
             <i class="fa-solid fa-circle-plus text-purple-400"></i> Adicionar Nova Conta
-          </h3>
+          </h4>
           <form id="addBillForm" class="space-y-2.5">
             <input 
               type="text" 
@@ -440,7 +485,60 @@
       };
     }
 
+    function renderWelcomeBanner() {
+      const now = new Date();
+      const hours = now.getHours();
+      let greeting = "Olá, bem-vindo! 👋";
+
+      if (hours >= 5 && hours < 12) greeting = "Bom dia! ☀️";
+      else if (hours >= 12 && hours < 18) greeting = "Boa tarde! 🌤️";
+      else greeting = "Boa noite! 🌙";
+
+      const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      const todayFormatted = new Intl.DateTimeFormat('pt-BR', dateOptions).format(now);
+
+      document.getElementById('welcomeGreeting').textContent = greeting;
+      document.getElementById('welcomeSubtext').textContent = `Hoje é ${todayFormatted}.`;
+
+      // Status do Dia de Hoje
+      const todayKey = formatDateKey(now);
+      const todayOff = isOffDay(now);
+
+      const statusIcon = document.getElementById('todayStatusIcon');
+      const statusText = document.getElementById('todayStatusText');
+
+      if (todayOff) {
+        statusText.textContent = "Dia de Folga! 🏖️";
+        statusText.className = "text-xs font-extrabold text-pink-400";
+        statusIcon.className = "w-10 h-10 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-lg border border-pink-500/20";
+        statusIcon.innerHTML = `<i class="fa-solid fa-umbrella-beach"></i>`;
+      } else {
+        statusText.textContent = "Dia de Trabalho 💼";
+        statusText.className = "text-xs font-extrabold text-purple-300";
+        statusIcon.className = "w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg border border-purple-500/20";
+        statusIcon.innerHTML = `<i class="fa-solid fa-briefcase"></i>`;
+      }
+
+      // Contas para Hoje
+      const todayBills = state.bills.filter(bill => {
+        const { adjustedDateKey } = getAdjustedPaymentDate(bill.originalDueDate);
+        return adjustedDateKey === todayKey && bill.status === 'pending';
+      });
+
+      const totalTodayPending = todayBills.reduce((acc, b) => acc + Number(b.amount), 0);
+      const billsTextEl = document.getElementById('todayBillsText');
+
+      if (todayBills.length === 0) {
+        billsTextEl.textContent = "Nenhuma pendência 🎉";
+        billsTextEl.className = "text-xs font-extrabold text-emerald-400";
+      } else {
+        billsTextEl.textContent = `R$ ${totalTodayPending.toFixed(2)} (${todayBills.length})`;
+        billsTextEl.className = "text-xs font-extrabold text-amber-300";
+      }
+    }
+
     function renderAll() {
+      renderWelcomeBanner();
       renderCalendar();
       renderSelectedDayDetails();
       renderMonthlySummary();
